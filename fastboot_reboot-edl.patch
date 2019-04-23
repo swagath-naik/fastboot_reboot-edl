@@ -1,0 +1,37 @@
+--- a/fastboot/fastboot.cpp	2019-04-24 00:46:11.701827000 +0530
++++ b/fastboot/fastboot.cpp	2019-04-24 03:07:02.818210930 +0530
+@@ -371,6 +371,7 @@
+             "  continue                                 Continue with autoboot.\n"
+             "  reboot [bootloader|emergency]            Reboot device [into bootloader or emergency mode].\n"
+             "  reboot-bootloader                        Reboot device into bootloader.\n"
++            "  reboot-edl                               Reboot device into edl mode.\n"
+             "  oem <parameter1> ... <parameterN>        Executes oem specific command.\n"
+             "  stage <infile>                           Sends contents of <infile> to stage for\n"
+             "                                           the next command. Supported only on\n"
+@@ -1496,6 +1497,7 @@
+     bool wants_wipe = false;
+     bool wants_reboot = false;
+     bool wants_reboot_bootloader = false;
++    bool wants_reboot_edl = false;
+     bool wants_reboot_emergency = false;
+     bool skip_reboot = false;
+     bool wants_set_active = false;
+@@ -1747,6 +1749,8 @@
+             if (!args.empty()) syntax_error("junk after reboot command");
+         } else if (command == "reboot-bootloader") {
+             wants_reboot_bootloader = true;
++        } else if (command == "reboot-edl") {
++            wants_reboot_edl = true;
+         } else if (command == "continue") {
+             fb_queue_command("continue", "resuming boot");
+         } else if (command == "boot") {
+@@ -1881,6 +1885,9 @@
+     } else if (wants_reboot_bootloader) {
+         fb_queue_command("reboot-bootloader", "rebooting into bootloader");
+         fb_queue_wait_for_disconnect();
++    } else if (wants_reboot_edl) {
++        fb_queue_command("reboot-edl", "rebooting into edl mode");
++        fb_queue_wait_for_disconnect();
+     } else if (wants_reboot_emergency) {
+         fb_queue_command("reboot-emergency", "rebooting into emergency download (EDL) mode");
+         fb_queue_wait_for_disconnect();
